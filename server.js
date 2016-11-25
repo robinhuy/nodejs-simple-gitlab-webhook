@@ -15,24 +15,24 @@ var server = http.createServer((request, response) => {
         });
 
         request.on('end', () => {
+            // Parse data to Object
             try {
-                // Parse data to Object
                 body = JSON.parse(body);
-                
-                // Run script if action is Push
-                if (body.object_kind == 'push') {
-                    const deploy = spawn('bash', [SCRIPT_PATH]);
-
-                    deploy.on('close', code => {
-                        console.log(`Script exited with code ${code}`);
-                    });
-                }
-
-                response.end();
             } catch (error) {
-                console.log(error);
+                console.log("Invalid data");
                 response.end();
             }
+            
+            // Run Script if action is Push
+            if (body.object_kind == 'push') {
+                const deploy = spawn('bash', [SCRIPT_PATH]);
+
+                deploy.on('close', code => {
+                    console.log(`Script exited with code ${code}`);
+                });
+            }
+
+            response.end();
         });
     } else {
         response.end();
