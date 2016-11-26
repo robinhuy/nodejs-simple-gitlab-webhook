@@ -1,13 +1,13 @@
 const http = require('http');
 const spawn = require('child_process').spawn;
+const config = require('./config');
 
 const PORT = 8000;
-const SCRIPT_PATH = '/home/huy/gitlab-watcher/test.sh';
 
 // Create server
 var server = http.createServer((request, response) => {
-    // Only accept POST request
-    if (request.method == 'POST') {
+
+    if (request.method == 'POST' && request.headers['x-gitlab-event'] == 'Push Hook') {
         var body = '';
 
         request.on('data', data => {
@@ -23,13 +23,21 @@ var server = http.createServer((request, response) => {
                 response.end();
             }
             
-            // Run Script if action is Push
-            if (body.object_kind == 'push') {
-                const deploy = spawn('bash', [SCRIPT_PATH]);
+            for (project of config.projects) {
+                if (project.url == body.repository.url || project.url == body.project.url) {
+                    // Run Script of project
+                    let scripts = project.script.split(' ');
+                    let command = scripts[0];
+                    scripts.shift();
 
-                deploy.on('close', code => {
-                    console.log(`Script exited with code ${code}`);
-                });
+                    const deploy = spawn(command, scripts);
+
+                    deploy.on('close', code => {
+                        console.log(`Script exited with code ${code}`);
+                    });
+
+                    break;
+                }
             }
 
             response.end();
