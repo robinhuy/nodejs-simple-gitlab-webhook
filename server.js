@@ -25,13 +25,13 @@ var server = http.createServer((request, response) => {
             
             for (project of config.projects) {
                 if (project.url == body.repository.url || project.url == body.project.url) {
-                    // Run Script of project
+                    // Get Script Command & Args
                     let scripts = project.script.split(' ');
                     let command = scripts[0];
                     scripts.shift();
 
+                    // Run Script
                     const deploy = spawn(command, scripts);
-
                     deploy.on('close', code => {
                         console.log(`Script exited with code ${code}`);
                     });
