@@ -1,5 +1,5 @@
 ## Simple NodeJS based Web Hook for Gitlab
-Example of Gitlab Web Hook entry point. Use NodeJS without dependencies.
+Example of Gitlab Web Hook endpoint. Use NodeJS without dependencies.
 
 ## Usage
 
@@ -16,5 +16,6 @@ $ node server.js
 ```
 
 #### Add Web Hook to Project
+Example: http://localhost:8000
 
 
